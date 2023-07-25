@@ -1,0 +1,1 @@
+<img src="{{ asset('logo/MEZTAKE.png') }}" alt="" width="200px">
