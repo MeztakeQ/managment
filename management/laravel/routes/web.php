@@ -30,18 +30,18 @@ Route::controller(EntriController::class)->group(function() {
 });
 
 Route::controller(EntriController::class)->group(function () {
-    Route::get('/all/entri', 'AllEntri')->name('all.entri');
+    Route::get('/entri/index', 'index')->name('all.entri');
 
-    Route::get('/add/entri', 'AddEntri')->name('add.entri');
+    Route::get('/entri/create', 'create')->name('add.entri');
 
-    Route::post('/store/entri', 'StoreEntri')->name('store.entri');
+    Route::post('/entri/store', 'store')->name('store.entri');
 
-    Route::get('/edit/entri/{id}', 'EditEntri')->name('edit.entri');
+    Route::get('/entri/edit/{entri}', 'edit')->name('edit.entri');
 
-    Route::post('/update/entri', 'UpdateEntri')->name('update.entri');
+    Route::patch('/entri/update/{entri}', 'update')->name('update.entri');
 
-    Route::get('/entri/download/{entri}', 'Download')->name('entri.download');
-   
+    Route::get('/entri/download/{entri}', 'download')->name('entri.download');
+
 });
 
 

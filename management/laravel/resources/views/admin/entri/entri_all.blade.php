@@ -59,16 +59,15 @@
 
 
                                             <tbody>
-                                                @php($i = 1)
-                                                @foreach ($entri as $item)
+                                                @foreach ($items as $item)
                                                     <tr>
                                                         <td> {{ $loop->iteration }} </td>
                                                         <td> {{ $item->title }} </td>
-                                                        <td> <a href="{{route('entri.download', $item->id) }}">{{ $item->home_file }}</a></td>
-                                                        <td> 12MB </td>
+                                                        <td> <a href="{{route('entri.download', $item->id) }}">{{ $item->getName() }}</a></td>
+                                                        <td> {{ $item->sizeForHuman() }} </td>
                                                         <td> {{ $item->email }} </td>
-                                                        <td> {{ $item->created_at }}</td>
-                                                        <td> {{ $item->updated_at }}</td>
+                                                        <td> {{ $item->created_at->isoFormat('LLL') }}</td>
+                                                        <td> {{ $item->updated_at->isoFormat('LLL') }}</td>
                                                         <td>
                                                             <a href="{{ route('edit.entri', $item->id) }}"
                                                                 class="btn btn-info sm" title="Редактировать запись"> <i

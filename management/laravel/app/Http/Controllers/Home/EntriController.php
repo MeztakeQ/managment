@@ -12,65 +12,53 @@ use Image;
 
 class EntriController extends Controller
 {
-    public function AllEntri()
+    public function index(): \Illuminate\Http\Response
     {
-        $entri = Entri::latest()->get();
-        return view('admin.entri.entri_all', compact('entri'));
+        return response()->view('admin.entri.entri_all', [
+            'items' => Entri::query()->orderBy('id', 'DESC')->get(),
+        ]);
     }
 
-    public function AddEntri()
+    public function create()
     {
-        return view('admin.entri.entri_add');
+        return response()->view('admin.entri.entri_add');
     }
 
-    public function StoreEntri(Request $request)
+    public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $request->validate([
+        $data = $request->validate([
             'title' => 'required',
             'email' => 'required',
-            'home_file' => 'required',
-            
-
+            'home_file.*' => 'required|mimes:pdf,xlx,csv,txt,docx,jpg,bmp,png,rar,zip',
         ], [
 
             'title.required' => 'Portfolio Name is Required',
             'email.required' => 'Portfolio Titile is Required',
         ]);
 
-        $image = $request->file('home_file');
+        foreach ($data['home_file'] as $file) {
+            $entri = new Entri($data);
+            $entri->original_name = $file->getClientOriginalName();
+            $entri->home_file = $file->store('entries');
+            $entri->size = $file->getSize();
+            $entri->save();
 
-        foreach ($image as $home_file) {
-
-            // $name_gen = hexdec(uniqid()) . '.' . $home_file->getClientOriginalExtension(); // 3434343443.jpg
-
-
-            // $image = 'upload/entri_file/' . $name_gen;
-
-            Entri::insert([
-                'title' => $request->title,
-                'email' => $request->email,
-                'home_file' => $home_file->store('entries'),
-                
-                'created_at' => Carbon::now(),
-
-            ]);
-            $notification = array(
+            $notification = [
                 'message' => 'Portfolio Inserted Successfully',
                 'alert-type' => 'success'
-            );
-
-            return redirect()->route('all.entri')->with($notification);
+            ];
         }
+        return redirect()->route('all.entri')->with($notification);
     }
 
-    public function Download (Entri $entri) {
-        return response()->download(storage_path('app/'. $entri->home_file));
-    }
-
-    public function EditEntri($id)
+    public function download(Entri $entri): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
-        $entri = Entri::findOrFail($id);
-        return view('admin.entri.entri_edit', compact('entri'));
+        return response()->download(storage_path('app/' . $entri->home_file), $entri->getName());
+    }
+
+    public function edit(Entri $entri): \Illuminate\Http\Response
+    {
+        return response()->view('admin.entri.entri_edit', compact('entri'));
     }
 
 
@@ -106,7 +94,6 @@ class EntriController extends Controller
                 'email' => $request->email,
 
 
-
             ]);
             $notification = array(
                 'message' => 'Portfolio Updated without Image Successfully',
@@ -117,12 +104,11 @@ class EntriController extends Controller
 
         } // end Else
 
-    } // End Method 
-
+    } // End Method
 
 
     // public function DownloadEntri(Request $request){
-        
+
     //     $request->validate([
 
     //         'title' => 'required',
@@ -143,7 +129,7 @@ class EntriController extends Controller
 
     //     foreach ($image as $home_file) {
 
-    //         $name_gen = hexdec(uniqid()) . '.' . $home_file->getClientOriginalExtension(); 
+    //         $name_gen = hexdec(uniqid()) . '.' . $home_file->getClientOriginalExtension();
 
     //         $save_url = 'upload/entri_file/' . $name_gen;
 
@@ -171,8 +157,6 @@ class EntriController extends Controller
 
     //     }
     // }
-
-
 
 
 }
